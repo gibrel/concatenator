@@ -3,13 +3,13 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pyminplate"
-version = "0.0.1" # alterar em src/pyminplate/__init__.py também
+name = "concatenator"
+version = "0.0.1" # alterar em src/concatenator/__init__.py também
 description = "Minimal Python boilerplate with modern tooling."
 readme = "README.md"
 requires-python = ">=3.12.12"
 license = { file = "LICENSE" }
-keywords = ["boilerplate", "python", "pyminplate"]
+keywords = ["boilerplate", "python", "concatenator"]
 authors = [{ name = "Gibrel" }]
 dependencies = []
 
@@ -21,7 +21,7 @@ dev = [
 ]
 
 [project.scripts]
-pyminplate = "pyminplate.cli:main"
+concatenator = "concatenator.cli:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
@@ -49,4 +49,4 @@ line-length = 100
 select = ["E", "F", "I", "B", "UP"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["pyminplate"]
+known-first-party = ["concatenator"]

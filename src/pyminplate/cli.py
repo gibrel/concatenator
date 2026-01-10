@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import argparse
 
-from pyminplate.core.config import Settings
-from pyminplate.core.logger import configure_logger
+from concatenator.core.config import Settings
+from concatenator.core.logger import configure_logger
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="pyminplate CLI")
-    parser.add_argument("--name", default="pyminplate", help="Name to greet")
+    parser = argparse.ArgumentParser(description="concatenator CLI")
+    parser.add_argument("--name", default="concatenator", help="Name to greet")
     return parser
 
 

@@ -1,4 +1,4 @@
-# pyminplate
+# concatenator
 
 Boilerplate mínimo para iniciar projetos Python com boas práticas e tooling moderno.
 
@@ -11,14 +11,14 @@ Boilerplate mínimo para iniciar projetos Python com boas práticas e tooling mo
 - **Type check**: `mypy`
 - **Python**: >= 3.12.12
 - **Estrutura**: `domain/`, `services/` e `core/`
-- **CLI**: comando `pyminplate`
+- **CLI**: comando `concatenator`
 
 ## Estrutura do projeto
 
 ```text
-pyminplate/
+concatenator/
 ├── src/
-│   └── pyminplate/
+│   └── concatenator/
 │       ├── core/
 │       │   ├── config.py
 │       │   ├── exceptions.py
@@ -64,8 +64,8 @@ make type
 ## Customização
 
 - Ajuste metadados do projeto em `pyproject.toml`.
-- Acrescente regras em `src/pyminplate/domain` e `src/pyminplate/services`.
-- Centralize configurações em `src/pyminplate/core`.
+- Acrescente regras em `src/concatenator/domain` e `src/concatenator/services`.
+- Centralize configurações em `src/concatenator/core`.
 
 ## Licença
 

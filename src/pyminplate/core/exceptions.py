@@ -1,5 +1,5 @@
 """Custom exception types."""
 
 
-class ExcpyminplateError(Exception):
+class ExcconcatenatorError(Exception):
     """Base exception for the application."""

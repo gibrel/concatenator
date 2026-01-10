@@ -10,7 +10,7 @@ from pathlib import Path
 class Settings:
     """Application settings loaded from defaults or environment."""
 
-    app_name: str = "pyminplate"
+    app_name: str = "concatenator"
     base_dir: Path = Path.cwd()
 
     @property

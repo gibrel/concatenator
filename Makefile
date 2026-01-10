@@ -34,7 +34,7 @@ build:
 	$(BIN)/python -m build
 
 run:
-	$(BIN)/pyminplate
+	$(BIN)/concatenator
 
 clean:
 	rm -rf $(VENV) .pytest_cache .ruff_cache .mypy_cache dist build *.egg-info
