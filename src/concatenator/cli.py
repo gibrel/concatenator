@@ -12,6 +12,8 @@ from .core.logger import configure_logger
 from .services.condenser import condense_directory
 
 app_name, app_version, app_summary, app_description = get_package_metadata()
+if not app_summary:
+    app_summary = app_description
 
 
 def build_parser() -> argparse.ArgumentParser:
