@@ -10,10 +10,10 @@ from pathlib import Path
 class Settings:
     """Application settings loaded from defaults or environment."""
 
-    root_directory: Path
-    output_file: Path
+    root_directory: Path = field(default_factory=Path.cwd)
+    output_file: Path = field(default_factory=lambda: Path.cwd() / "output.md")
     application_name: str = "concatenator"
-    base_directory: Path = Path.cwd()
+    base_directory: Path = field(default_factory=Path.cwd)
 
     ignore_directories: set[str] = field(default_factory=set)
     ignore_extensions: set[str] = field(default_factory=set)
@@ -22,7 +22,7 @@ class Settings:
     encoding: str = "utf-8"
     errors: str = "replace"  # "strict", "ignore", "replace"
     detect_encoding: bool = False
-    skip_binary: bool = True
+    skip_binary: bool = False
 
     max_file_size: int | None = None  # in bytes
 
