@@ -3,7 +3,7 @@ VENV := .venv
 BIN := $(VENV)/bin
 PIP := $(BIN)/pip
 
-.PHONY: venv init deps dev install format lint type test build run clean
+.PHONY: venv init deps dev install format lint type test build install run clean
 
 venv:
 	$(PYTHON) -m venv $(VENV)
@@ -33,8 +33,11 @@ test:
 build:
 	$(BIN)/python -m build
 
+install: build
+	$(PIP) install dist/*.whl
+
 run:
-	$(BIN)/concatenator
+	$(BIN)/concatenator $(ARGS)
 
 clean:
 	rm -rf $(VENV) .pytest_cache .ruff_cache .mypy_cache dist build *.egg-info
