@@ -6,12 +6,9 @@
 ![Type Checking](https://img.shields.io/badge/type%20checking-mypy-blueviolet)
 ![Status](https://img.shields.io/badge/status-alpha-orange)
 
-Concatenator é uma ferramenta de linha de comando escrita em Python para percorrer diretórios
-recursivamente e consolidar o conteúdo de múltiplos arquivos de texto em um único arquivo final.
+Concatenator é uma ferramenta de linha de comando escrita em Python para percorrer diretórios recursivamente e consolidar o conteúdo de múltiplos arquivos de texto em um único arquivo final.
 
-O projeto é voltado para inspeção de repositórios, auditoria de código, documentação técnica,
-análise de projetos e qualquer cenário em que seja útil visualizar o conteúdo completo de uma
-árvore de arquivos de forma organizada e rastreável.
+O projeto é voltado para inspeção de repositórios, auditoria de código, documentação técnica, análise de projetos e qualquer cenário em que seja útil visualizar o conteúdo completo de uma árvore de arquivos de forma organizada e rastreável.
 
 ---
 
@@ -114,8 +111,7 @@ make run "$ARGS"
 concatenator ./pasta-alvo
 ```
 
-Por padrão, o comando gera um arquivo `output.md` no diretório atual contendo o conteúdo
-de todos os arquivos elegíveis encontrados.
+Por padrão, o comando gera um arquivo `output.md` no diretório atual contendo o conteúdo de todos os arquivos elegíveis encontrados, com caminhos exibidos a partir da pasta alvo (ex.: `/pasta-alvo/src/projeto/arquivo.py`).
 
 ---
 
@@ -166,15 +162,15 @@ concatenator ./pasta-alvo --max-file-size 50000
 
 Cada arquivo incluído recebe um cabeçalho e um rodapé configuráveis:
 
-`````bash
+```bash
 --header-text "### {path}\n\n````{extension_name}"
 --footer-text "````\n\n// End of {path}\n"
-`````
+```
 
 Variáveis disponíveis:
 
 - `{path}` → caminho do arquivo
-- `{extension_name}` → extensão do arquivo sem o ponto
+- `{extension_name}` → extensão do arquivo sem o ponto (ou nome do arquivo se não houver extensão)
 
 ---
 
@@ -185,6 +181,7 @@ Variáveis disponíveis:
 - Diretórios ignorados por nome ou caminho relativo
 - Arquivos ilegíveis ignorados com segurança
 - Fallback automático de encoding
+- Arquivos sem extensão usam o nome do arquivo como `extension_name` (ex.: `Makefile`)
 
 ---
 
@@ -221,6 +218,12 @@ concatenator/
 make test
 ```
 
+Para checar cobertura mínima (>= 80%):
+
+```bash
+make coverage
+```
+
 ---
 
 ## 🧹 Qualidade de código
@@ -229,6 +232,9 @@ make test
 make format
 make lint
 make type
+
+# ou então para lint + format + typecheck + test
+make pre-commit
 ```
 
 ---
