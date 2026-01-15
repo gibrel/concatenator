@@ -3,7 +3,7 @@ VENV := .venv
 BIN := $(VENV)/bin
 PIP := $(BIN)/pip
 
-.PHONY: venv init deps dev install format lint type test build install run clean
+.PHONY: venv init deps dev install format lint type test coverage build install run pre-commit clean
 
 venv:
 	$(PYTHON) -m venv $(VENV)
@@ -28,7 +28,10 @@ type:
 	$(BIN)/mypy src
 
 test:
-	$(BIN)/pytest
+	$(BIN)/pytest -q
+
+coverage:
+	$(BIN)/pytest --cov=concatenator --cov-report=term-missing --cov-fail-under=80
 
 build:
 	$(BIN)/python -m build
@@ -38,6 +41,8 @@ install: build
 
 run:
 	$(BIN)/concatenator $(ARGS)
+
+pre-commit: format lint type test
 
 clean:
 	rm -rf $(VENV) .pytest_cache .ruff_cache .mypy_cache dist build *.egg-info
