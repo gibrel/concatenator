@@ -16,6 +16,14 @@ from .readers import is_binary_file, read_file_content
 logger = logging.getLogger(__name__)
 
 
+def build_display_path(path: Path, root: Path, use_relative_paths: bool) -> str:
+    if not use_relative_paths:
+        return str(path)
+    relative = path.relative_to(root)
+    display_path = Path(root.name) / relative
+    return f"/{display_path.as_posix()}"
+
+
 def condense_directory(settings: Settings) -> int:
     """Condense files in the root directory based on settings.
 
@@ -41,8 +49,11 @@ def condense_directory(settings: Settings) -> int:
 
             for dirpath, dirnames, filenames in os.walk(configuration.root_directory):
                 current_dir = Path(dirpath)
+                display_dir = build_display_path(
+                    current_dir, configuration.root_directory, configuration.use_relative_paths
+                )
 
-                output_file.write(f"## {current_dir}\n\n")
+                output_file.write(f"## {display_dir}\n\n")
 
                 # Should skip ignored directories
                 to_remove = should_ignore_dir(
@@ -90,17 +101,25 @@ def condense_directory(settings: Settings) -> int:
                         continue
 
                     relative_path = (
-                        file_path.relative_to(configuration.root_directory)
+                        build_display_path(
+                            file_path,
+                            configuration.root_directory,
+                            configuration.use_relative_paths,
+                        )
                         if configuration.use_relative_paths
                         else file_path
                     )
 
-                    extension_name = file_path.suffix.lstrip(".") or "no_extension"
+                    extension_name = file_path.suffix.lstrip(".") or file_path.name
 
                     header = configuration.header_text.format(
                         path=relative_path, extension_name=extension_name
                     )
                     footer = configuration.footer_text.format(path=relative_path)
+
+                    if file_path.name == "Makefile":
+                        header = header.replace("\n\n", "\n\n<!-- markdownlint-disable MD010 -->\n")
+                        footer = footer.replace("\n\n", "\n<!-- markdownlint-enable MD010 -->\n\n")
 
                     output_file.write(header + "\n")
                     output_file.write(content)
@@ -109,6 +128,15 @@ def condense_directory(settings: Settings) -> int:
                     output_file.write(footer + "\n")
 
                     files_condensed += 1
+
+        condensed_text = configuration.output_file.read_text(
+            encoding=configuration.encoding, errors=configuration.errors
+        ).rstrip("\n")
+        if condensed_text:
+            condensed_text += "\n"
+        configuration.output_file.write_text(
+            condensed_text, encoding=configuration.encoding, errors=configuration.errors
+        )
 
         logger.info(f"Included files: {files_condensed}")
         logger.info(f"Output written to: {configuration.output_file}")

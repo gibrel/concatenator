@@ -27,7 +27,7 @@ class Settings:
     max_file_size: int | None = None  # in bytes
 
     header_text: str = "### {path}\n\n````{extension_name}"
-    footer_text: str = "````\n\n// End of {path}"
+    footer_text: str = "````\n\n// End of {path}\n"
     use_relative_paths: bool = True
 
     @property
