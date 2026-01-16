@@ -19,19 +19,19 @@ deps-dev: init
 
 dev: deps-dev
 
-format:
+format: dev
 	$(BIN)/ruff format
 
-lint:
+lint: dev
 	$(BIN)/ruff check --fix
 
-type:
+type: dev
 	$(BIN)/mypy src
 
-test:
+test: dev
 	$(BIN)/pytest -q
 
-coverage:
+coverage: dev
 	$(BIN)/pytest --cov=concatenator --cov-report=term-missing --cov-fail-under=80
 
 build:
@@ -40,7 +40,7 @@ build:
 install: build
 	$(PIP) install dist/*.whl
 
-run:
+run: deps-run
 	$(BIN)/concatenator $(ARGS)
 
 pre-commit: format lint type test
