@@ -8,7 +8,7 @@ from concatenator import metadata as metadata_module
 class DummyDistribution:
     def __init__(self) -> None:
         self.version = "1.2.3"
-        self.metadata = {"Name": "concatenator", "Summary": "summary", "Description": "desc"}
+        self.metadata = {"Name": "concatenator", "Description": "desc"}
 
 
 def test_get_package_metadata_from_distribution(monkeypatch):
@@ -18,11 +18,10 @@ def test_get_package_metadata_from_distribution(monkeypatch):
         return DummyDistribution()
 
     monkeypatch.setattr(metadata, "distribution", fake_distribution)
-    name, version, summary, description = metadata_module.get_package_metadata()
+    name, version, description = metadata_module.get_package_metadata()
 
     assert name == "concatenator"
     assert version == "1.2.3"
-    assert summary == "summary"
     assert description == "desc"
 
 
@@ -40,7 +39,6 @@ def test_get_package_metadata_falls_back_to_pyproject(monkeypatch, tmp_path):
 name = "concatenator"
 version = "9.9.9"
 description = "desc"
-summary = "summary"
 """.strip()
     )
 
@@ -48,11 +46,10 @@ summary = "summary"
     assert data is not None
 
     monkeypatch.chdir(tmp_path)
-    name, version, summary, description = metadata_module.get_package_metadata()
+    name, version, description = metadata_module.get_package_metadata()
 
     assert name == "concatenator"
     assert version == "9.9.9"
-    assert summary == "summary"
     assert description == "desc"
 
 

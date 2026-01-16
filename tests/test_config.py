@@ -25,3 +25,16 @@ def test_ensure_paths_normalizes_filters(tmp_path):
     assert ".py" in resolved.ignore_extensions
     assert ".txt" in resolved.ignore_extensions
     assert resolved.include_extensions == {".md"}
+
+
+def test_ensure_paths_normalizes_extensions_and_directories(tmp_path):
+    settings = Settings(
+        root_directory=tmp_path,
+        ignore_directories=["dist", "dist/"],
+        include_extensions=["PY", ".Py"],
+    )
+
+    resolved = settings.ensure_paths()
+    assert "dist" in resolved.ignore_directories
+    assert "dist/" in resolved.ignore_directories
+    assert resolved.include_extensions == {".py"}

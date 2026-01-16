@@ -19,6 +19,20 @@ def test_read_file_content_falls_back_to_latin1(tmp_path):
     assert read_file_content(text_path, encoding="utf-8", errors="strict") == "café"
 
 
+def test_read_file_content_detects_encoding_when_enabled(tmp_path):
+    text_path = tmp_path / "latin.txt"
+    text_path.write_bytes(b"caf\xe9")
+    assert (
+        read_file_content(
+            text_path,
+            encoding="utf-8",
+            errors="strict",
+            detect_encoding=True,
+        )
+        == "café"
+    )
+
+
 def test_read_file_content_returns_none_for_missing_file(tmp_path):
     missing_path = tmp_path / "missing.txt"
     assert read_file_content(missing_path) is None
