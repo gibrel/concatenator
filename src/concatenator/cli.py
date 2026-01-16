@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import logging
 from pathlib import Path
 
 from concatenator.metadata import get_package_metadata
@@ -77,13 +78,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="Add markdownlint disable/enable markers around Makefile content.",
     )
     parser.add_argument(
+        "-q", "--quiet", action="store_true", help="Suppress non-essential log output."
+    )
+    parser.add_argument(
         "-v", "--verbose", action="count", default=0, help="Increase verbosity level."
     )
     return parser
 
 
-def setup_logger(verbosity: int, settings: Settings) -> None:
-    level = max(10, 30 - (verbosity * 10))  # 0: WARNING, 1: INFO, 2+: DEBUG
+def setup_logger(verbosity: int, settings: Settings, quiet: bool = False) -> None:
+    level = logging.ERROR if quiet else max(10, 30 - (verbosity * 10))
     logger = configure_logger(settings.app_name, level=level)
     logger.debug(f"Logger configured at level: {level}")
 
@@ -108,7 +112,7 @@ def main() -> int:
         footer_text=args.footer_text,
         makefile_markdownlint=args.markdownlint_disable_md010,
     )
-    setup_logger(verbosity=args.verbose, settings=settings)
+    setup_logger(verbosity=args.verbose, settings=settings, quiet=args.quiet)
 
     count = condense_directory(settings)
     print(f"Condensed {count} files into {settings.output_file}")
