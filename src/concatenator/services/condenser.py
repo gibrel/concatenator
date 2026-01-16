@@ -24,7 +24,13 @@ logger = logging.getLogger(__name__)
 def build_display_path(path: Path, root: Path, use_relative_paths: bool) -> str:
     if not use_relative_paths:
         return str(path)
-    relative = path.relative_to(root)
+    try:
+        relative = path.relative_to(root)
+    except ValueError:
+        try:
+            relative = Path(os.path.relpath(path, root))
+        except ValueError:
+            return str(path)
     display_path = Path(root.name) / relative
     return f"/{display_path.as_posix()}"
 
