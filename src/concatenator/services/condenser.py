@@ -186,7 +186,7 @@ def condense_directory(settings: Settings) -> int:
                     )
                     footer = configuration.footer_text.format(path=relative_path)
 
-                    if file_path.name == "Makefile":
+                    if configuration.makefile_markdownlint and file_path.name == "Makefile":
                         header = header.replace("\n\n", "\n\n<!-- markdownlint-disable MD010 -->\n")
                         footer = footer.replace("\n\n", "\n<!-- markdownlint-enable MD010 -->\n\n")
 

@@ -71,6 +71,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Footer text format for each file.",
     )
     parser.add_argument(
+        "--markdownlint-disable-md010",
+        "--mdlint-md010",
+        action="store_true",
+        help="Add markdownlint disable/enable markers around Makefile content.",
+    )
+    parser.add_argument(
         "-v", "--verbose", action="count", default=0, help="Increase verbosity level."
     )
     return parser
@@ -100,6 +106,7 @@ def main() -> int:
         # relative_paths=args.relative_paths,
         header_text=args.header_text,
         footer_text=args.footer_text,
+        makefile_markdownlint=args.markdownlint_disable_md010,
     )
     setup_logger(verbosity=args.verbose, settings=settings)
 
