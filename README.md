@@ -144,6 +144,14 @@ concatenator ./pasta-alvo \
   --ignore-directories .git .venv node_modules
 ```
 
+### Detectar encoding automaticamente
+
+```bash
+concatenator ./pasta-alvo --detect-encoding
+```
+
+> ⚠️ Essa opção ativa detecção automática quando a leitura em UTF-8 falha e pode impactar a performance.
+
 ### Ignorar arquivos binários
 
 ```bash
@@ -154,6 +162,18 @@ concatenator ./pasta-alvo --skip-binary
 
 ```bash
 concatenator ./pasta-alvo --max-file-size 50000
+```
+
+### Inspecionar sem escrita (dry run)
+
+```bash
+concatenator ./pasta-alvo --dry-run
+```
+
+### Listar arquivos incluídos sem gerar saída
+
+```bash
+concatenator ./pasta-alvo --list-files
 ```
 
 ---
@@ -189,8 +209,10 @@ Variáveis disponíveis:
 - Diretórios ignorados por nome ou caminho relativo
 - Arquivos ilegíveis ignorados com segurança
 - Fallback automático de encoding
+- Detecção automática de encoding é opcional e pode impactar a performance
 - Arquivos sem extensão usam o nome do arquivo como `extension_name` (ex.: `Makefile`)
 - Metadados do pacote priorizam `description` do `pyproject.toml` (PEP 621)
+- Resumo final exibe quantidade de arquivos incluídos, ignorados e tempo total
 
 ---
 
