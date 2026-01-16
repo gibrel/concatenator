@@ -26,6 +26,8 @@ class Settings:
     errors: str = "replace"  # "strict", "ignore", "replace"
     detect_encoding: bool = False
     skip_binary: bool = False
+    dry_run: bool = False
+    list_files: bool = False
 
     max_file_size: int | None = None  # in bytes
 
@@ -56,6 +58,8 @@ class Settings:
             errors=self.errors,
             detect_encoding=self.detect_encoding,
             skip_binary=self.skip_binary,
+            dry_run=self.dry_run,
+            list_files=self.list_files,
             max_file_size=self.max_file_size,
             header_text=self.header_text,
             footer_text=self.footer_text,
