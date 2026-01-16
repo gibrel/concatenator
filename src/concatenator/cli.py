@@ -18,6 +18,7 @@ if not app_summary:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog=f"{app_name} CLI v{app_version}", description=app_summary)
+    parser.add_argument("--version", action="version", version=f"{app_name} {app_version}")
     parser.add_argument("root_directory", type=Path, help="Root directory to condense files from.")
     parser.add_argument(
         "-o", "--output-file", type=Path, default=Path.cwd() / "output.md", help="Output file path."
