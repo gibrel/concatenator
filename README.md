@@ -1,12 +1,12 @@
-# concatenator
+# `concatenator`
 
 ![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg)
-![License](https://img.shields.io/badge/license-Unlicense-green.svg)
-![Style](https://img.shields.io/badge/code%20style-ruff-black)
+![License](https://img.shields.io/badge/license-Unlicense-black.svg)
+![Style](https://img.shields.io/badge/code%20style-ruff-red)
 ![Type Checking](https://img.shields.io/badge/type%20checking-mypy-blueviolet)
 ![Status](https://img.shields.io/badge/status-alpha-orange)
 
-Concatenator é uma ferramenta de linha de comando escrita em Python para percorrer diretórios recursivamente e consolidar o conteúdo de múltiplos arquivos de texto em um único arquivo final.
+A ferramenta de linha de comando `concatenator` é uma  escrita em Python para percorrer diretórios recursivamente e consolidar o conteúdo de múltiplos arquivos de texto em um único arquivo final.
 
 O projeto é voltado para inspeção de repositórios, auditoria de código, documentação técnica, análise de projetos e qualquer cenário em que seja útil visualizar o conteúdo completo de uma árvore de arquivos de forma organizada e rastreável.
 
@@ -48,7 +48,7 @@ O projeto é voltado para inspeção de repositórios, auditoria de código, doc
 
 ## 🎯 Para quem é
 
-Concatenator é útil para:
+O `concatenator` é útil para:
 
 - Desenvolvedores que precisam auditar ou revisar repositórios
 - Geração de documentação consolidada
@@ -272,7 +272,7 @@ make pre-commit
 
 ## 🔧 Extensibilidade
 
-Concatenator foi projetado para ser facilmente estendido:
+O `concatenator` foi projetado para ser facilmente estendido:
 
 - Filtros → `services/filters.py`
 - Leitores → `services/readers.py`
