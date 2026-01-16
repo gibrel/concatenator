@@ -36,6 +36,12 @@ class CondenseSummary:
         return self.ignored_by_rule + self.skipped_binary + self.skipped_size
 
 
+@dataclass
+class DirectoryScan:
+    path: Path
+    files: list[Path]
+
+
 def build_display_path(path: Path, root: Path, use_relative_paths: bool) -> str:
     if not use_relative_paths:
         return str(path)
@@ -50,29 +56,38 @@ def build_display_path(path: Path, root: Path, use_relative_paths: bool) -> str:
     return f"/{display_path.as_posix()}"
 
 
-def collect_files_to_condense(configuration: Settings) -> tuple[list[Path], CondenseSummary]:
+def collect_files_to_condense(
+    configuration: Settings,
+    include_extensions: set[str],
+    ignore_extensions: set[str],
+    ignore_directories: set[str],
+) -> tuple[list[DirectoryScan], list[Path], CondenseSummary]:
+    directories: list[DirectoryScan] = []
     files_to_condense: list[Path] = []
     summary = CondenseSummary()
 
     for dirpath, dirnames, filenames in os.walk(configuration.root_directory):
         current_dir = Path(dirpath)
+        dirnames.sort()
+        filenames.sort()
 
         to_remove = should_ignore_dir(
             current_dir,
             dirnames,
-            normalize_ignore_directories(configuration.ignore_directories),
+            ignore_directories,
             configuration.root_directory,
         )
         for dirname in to_remove:
             dirnames.remove(dirname)
 
+        eligible_files: list[Path] = []
         for filename in filenames:
             file_path = current_dir / filename
 
             if not should_include_file(
                 file_path,
-                normalize_extensions(configuration.include_extensions),
-                normalize_extensions(configuration.ignore_extensions),
+                include_extensions,
+                ignore_extensions,
             ):
                 summary.ignored_by_rule += 1
                 continue
@@ -86,25 +101,14 @@ def collect_files_to_condense(configuration: Settings) -> tuple[list[Path], Cond
                     summary.unreadable += 1
                     continue
 
-            if configuration.skip_binary and is_binary_file(file_path):
-                summary.skipped_binary += 1
-                continue
-
-            content = read_file_content(
-                file_path,
-                encoding=configuration.encoding,
-                errors=configuration.errors,
-                detect_encoding=configuration.detect_encoding,
-            )
-
-            if content is None:
-                summary.unreadable += 1
-                continue
-
             files_to_condense.append(file_path)
-            summary.included += 1
+            eligible_files.append(file_path)
 
-    return files_to_condense, summary
+        if eligible_files:
+            summary.included += len(eligible_files)
+        directories.append(DirectoryScan(path=current_dir, files=eligible_files))
+
+    return directories, files_to_condense, summary
 
 
 def condense_directory(settings: Settings) -> int:
@@ -126,7 +130,15 @@ def condense_directory(settings: Settings) -> int:
     start_time = time.perf_counter()
 
     try:
-        files_to_condense, summary = collect_files_to_condense(configuration)
+        include_extensions = normalize_extensions(configuration.include_extensions)
+        ignore_extensions = normalize_extensions(configuration.ignore_extensions)
+        ignore_directories = normalize_ignore_directories(configuration.ignore_directories)
+        directories, files_to_condense, summary = collect_files_to_condense(
+            configuration,
+            include_extensions,
+            ignore_extensions,
+            ignore_directories,
+        )
         last_file = files_to_condense[-1] if files_to_condense else None
 
         if configuration.list_files:
@@ -143,48 +155,20 @@ def condense_directory(settings: Settings) -> int:
             ) as output_file:
                 output_file.write(f"# {Path(configuration.root_directory).name}\n\n")
 
-                for dirpath, dirnames, filenames in os.walk(configuration.root_directory):
-                    current_dir = Path(dirpath)
+                for directory in directories:
+                    current_dir = directory.path
                     display_dir = build_display_path(
                         current_dir, configuration.root_directory, configuration.use_relative_paths
                     )
 
                     output_file.write(f"## {display_dir}\n\n")
 
-                    # Should skip ignored directories
-                    to_remove = should_ignore_dir(
-                        current_dir,
-                        dirnames,
-                        normalize_ignore_directories(configuration.ignore_directories),
-                        configuration.root_directory,
-                    )
-                    for dirname in to_remove:
-                        dirnames.remove(dirname)
-
-                    for filename in filenames:
-                        file_path = current_dir / filename
-
-                        # should not include file based on extensions
-                        if not should_include_file(
-                            file_path,
-                            normalize_extensions(configuration.include_extensions),
-                            normalize_extensions(configuration.ignore_extensions),
-                        ):
-                            continue
-
-                        # should skip file based on size
-                        if configuration.max_file_size is not None:
-                            try:
-                                if file_path.stat().st_size > configuration.max_file_size:
-                                    logger.info("Skipping large file: %s", file_path)
-                                    continue
-                            except OSError:
-                                logger.warning("Could not access file size: %s", file_path)
-                                continue
-
+                    for file_path in directory.files:
                         # should skip file if it is binary
                         if configuration.skip_binary and is_binary_file(file_path):
                             logger.info("Skipping binary file: %s", file_path)
+                            summary.skipped_binary += 1
+                            summary.included -= 1
                             continue
 
                         content = read_file_content(
@@ -197,6 +181,8 @@ def condense_directory(settings: Settings) -> int:
                         # should skip file if content could not be read
                         if content is None:
                             logger.warning("Could not read file: %s", file_path)
+                            summary.unreadable += 1
+                            summary.included -= 1
                             continue
 
                         relative_path = (
