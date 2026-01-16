@@ -24,13 +24,25 @@ def build_parser() -> argparse.ArgumentParser:
         "-o", "--output-file", type=Path, default=Path.cwd() / "output.md", help="Output file path."
     )
     parser.add_argument(
-        "--ignore-directories", nargs="*", default=[], help="List of directory paths to ignore."
+        "--ignore-directories",
+        "--ignore-dirs",
+        nargs="*",
+        default=[],
+        help="List of directory paths to ignore.",
     )
     parser.add_argument(
-        "--ignore-extensions", nargs="*", default=[], help="List of file extensions to ignore."
+        "--ignore-extensions",
+        "--ignore-exts",
+        nargs="*",
+        default=[],
+        help="List of file extensions to ignore.",
     )
     parser.add_argument(
-        "--include-extensions", nargs="*", default=[], help="List of file extensions to include."
+        "--include-extensions",
+        "--include-exts",
+        nargs="*",
+        default=[],
+        help="List of file extensions to include.",
     )
     parser.add_argument("--encoding", type=str, default="utf-8", help="File encoding to use.")
     parser.add_argument(
