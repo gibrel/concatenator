@@ -32,6 +32,7 @@ class Settings:
     header_text: str = "### {path}\n\n````{extension_name}"
     footer_text: str = "````\n\n// End of {path}\n"
     use_relative_paths: bool = True
+    makefile_markdownlint: bool = False
 
     @property
     def data_dir(self) -> Path:
@@ -59,4 +60,5 @@ class Settings:
             header_text=self.header_text,
             footer_text=self.footer_text,
             use_relative_paths=self.use_relative_paths,
+            makefile_markdownlint=self.makefile_markdownlint,
         )
