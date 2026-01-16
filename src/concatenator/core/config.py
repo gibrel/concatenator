@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
+
+from concatenator.services.filters import normalize_extensions, normalize_ignore_directories
 
 
 @dataclass(frozen=True)
@@ -15,9 +18,9 @@ class Settings:
     application_name: str = "concatenator"
     base_directory: Path = field(default_factory=Path.cwd)
 
-    ignore_directories: set[str] = field(default_factory=set)
-    ignore_extensions: set[str] = field(default_factory=set)
-    include_extensions: set[str] = field(default_factory=set)
+    ignore_directories: Iterable[str] = field(default_factory=set)
+    ignore_extensions: Iterable[str] = field(default_factory=set)
+    include_extensions: Iterable[str] = field(default_factory=set)
 
     encoding: str = "utf-8"
     errors: str = "replace"  # "strict", "ignore", "replace"
@@ -45,9 +48,9 @@ class Settings:
             output_file=self.output_file.resolve(),
             application_name=self.application_name,
             base_directory=self.base_directory.resolve(),
-            ignore_directories=set(self.ignore_directories),
-            ignore_extensions={e.lower() for e in self.ignore_extensions},
-            include_extensions={e.lower() for e in self.include_extensions},
+            ignore_directories=normalize_ignore_directories(self.ignore_directories),
+            ignore_extensions=normalize_extensions(self.ignore_extensions),
+            include_extensions=normalize_extensions(self.include_extensions),
             encoding=self.encoding,
             errors=self.errors,
             detect_encoding=self.detect_encoding,
