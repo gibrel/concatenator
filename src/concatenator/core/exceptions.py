@@ -5,17 +5,17 @@ class ConcatenatorError(Exception):
     """Base exception for the application."""
 
 
-class InvalidRootError(ConcatenatorError):
+class ConcatenatorInvalidRootError(ConcatenatorError):
     """Raised when the specified root directory is invalid."""
 
 
-class FileNotFoundError(ConcatenatorError):
+class ConcatenatorFileNotFoundError(ConcatenatorError):
     """Raised when a required file is not found."""
 
 
-class UnsupportedFormatError(ConcatenatorError):
+class ConcatenatorUnsupportedFormatError(ConcatenatorError):
     """Raised when an unsupported file format is encountered."""
 
 
-class OutputWriteError(ConcatenatorError):
+class ConcatenatorOutputWriteError(ConcatenatorError):
     """Raised when there is an error writing to the output file."""

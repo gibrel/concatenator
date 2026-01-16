@@ -6,8 +6,8 @@ from pathlib import Path
 
 from concatenator.core.config import Settings
 from concatenator.core.exceptions import (
-    InvalidRootError,
-    OutputWriteError,
+    ConcatenatorInvalidRootError,
+    ConcatenatorOutputWriteError,
 )
 
 from .filters import (
@@ -95,7 +95,8 @@ def condense_directory(settings: Settings) -> int:
     configuration = settings.ensure_paths()
 
     if not configuration.root_directory.is_dir():
-        raise InvalidRootError(f"Invalid root directory: {configuration.root_directory}")
+        raise ConcatenatorInvalidRootError(
+            f"Invalid root directory: {configuration.root_directory}")
 
     configuration.output_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -212,4 +213,5 @@ def condense_directory(settings: Settings) -> int:
         return files_condensed
 
     except OSError as e:
-        raise OutputWriteError(f"Error writing to output file: {configuration.output_file}") from e
+        raise ConcatenatorOutputWriteError(
+            f"Error writing to output file: {configuration.output_file}") from e

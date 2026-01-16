@@ -1,7 +1,7 @@
 import pytest
 
 from concatenator.core.config import Settings
-from concatenator.core.exceptions import InvalidRootError
+from concatenator.core.exceptions import ConcatenatorInvalidRootError
 from concatenator.services import condenser
 
 
@@ -22,7 +22,7 @@ def test_condense_directory_rejects_invalid_root(tmp_path):
     output_file = tmp_path / "output.md"
     settings = Settings(root_directory=tmp_path / "missing", output_file=output_file)
 
-    with pytest.raises(InvalidRootError):
+    with pytest.raises(ConcatenatorInvalidRootError):
         condenser.condense_directory(settings)
 
 
