@@ -41,3 +41,39 @@ def test_condense_directory_skips_binary_when_requested(tmp_path):
     )
 
     assert condenser.condense_directory(settings) == 0
+
+
+def test_condense_directory_dry_run_skips_write(tmp_path):
+    root = tmp_path / "root"
+    root.mkdir()
+    (root / "one.txt").write_text("one")
+    (root / "two.txt").write_text("two")
+    output_file = tmp_path / "output.md"
+
+    settings = Settings(
+        root_directory=root,
+        output_file=output_file,
+        include_extensions={".txt"},
+        dry_run=True,
+    )
+
+    assert condenser.condense_directory(settings) == 2
+    assert not output_file.exists()
+
+
+def test_condense_directory_list_files_skips_write(tmp_path):
+    root = tmp_path / "root"
+    root.mkdir()
+    (root / "one.txt").write_text("one")
+    (root / "two.txt").write_text("two")
+    output_file = tmp_path / "output.md"
+
+    settings = Settings(
+        root_directory=root,
+        output_file=output_file,
+        include_extensions={".txt"},
+        list_files=True,
+    )
+
+    assert condenser.condense_directory(settings) == 2
+    assert not output_file.exists()
