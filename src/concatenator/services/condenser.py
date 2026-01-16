@@ -10,7 +10,12 @@ from concatenator.core.exceptions import (
     OutputWriteError,
 )
 
-from .filters import should_ignore_dir, should_include_file
+from .filters import (
+    normalize_extensions,
+    normalize_ignore_directories,
+    should_ignore_dir,
+    should_include_file,
+)
 from .readers import is_binary_file, read_file_content
 
 logger = logging.getLogger(__name__)
@@ -59,7 +64,7 @@ def condense_directory(settings: Settings) -> int:
                 to_remove = should_ignore_dir(
                     current_dir,
                     dirnames,
-                    configuration.ignore_directories,
+                    normalize_ignore_directories(configuration.ignore_directories),
                     configuration.root_directory,
                 )
                 for dirname in to_remove:
@@ -70,7 +75,9 @@ def condense_directory(settings: Settings) -> int:
 
                     # should not include file based on extensions
                     if not should_include_file(
-                        file_path, configuration.include_extensions, configuration.ignore_extensions
+                        file_path,
+                        normalize_extensions(configuration.include_extensions),
+                        normalize_extensions(configuration.ignore_extensions),
                     ):
                         continue
 
