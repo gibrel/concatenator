@@ -12,7 +12,7 @@ license = "Unlicense"
 license-files = ["LICENCSE"]
 keywords = ["boilerplate", "python", "concatenator"]
 authors = [{ name = "Gibrel" }]
-dependencies = []
+dependencies = ["charset-normalizer>=3.4.4"]
 
 [project.optional-dependencies]
 dev = [
