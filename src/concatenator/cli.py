@@ -11,13 +11,13 @@ from .core.config import Settings
 from .core.logger import configure_logger
 from .services.condenser import condense_directory
 
-app_name, app_version, app_summary, app_description = get_package_metadata()
-if not app_summary:
-    app_summary = app_description
+app_name, app_version, app_description = get_package_metadata()
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog=f"{app_name} CLI v{app_version}", description=app_summary)
+    parser = argparse.ArgumentParser(
+        prog=f"{app_name} CLI v{app_version}", description=app_description
+    )
     parser.add_argument("--version", action="version", version=f"{app_name} {app_version}")
     parser.add_argument("root_directory", type=Path, help="Root directory to condense files from.")
     parser.add_argument(
