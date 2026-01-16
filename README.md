@@ -167,6 +167,14 @@ Cada arquivo incluído recebe um cabeçalho e um rodapé configuráveis:
 --footer-text "````\n\n// End of {path}\n"
 ```
 
+Para adicionar marcadores markdownlint-disable (MD010) em inserções `Makefile`, utilize:
+
+```bash
+concatenator ./pasta-alvo --markdownlint-disable-md010
+# ou
+concatenator ./pasta-alvo --mdlint-md010
+```
+
 Variáveis disponíveis:
 
 - `{path}` → caminho do arquivo
@@ -198,10 +206,10 @@ concatenator/
 │       │   ├── logger.py      # Logging padronizado
 │       │   └── paths.py
 │       ├── services/
-│       │   ├── condenser.py # Lógica principal de condensação
-│       │   ├── filters.py   # Filtros de arquivos e diretórios
-│       │   └── readers.py   # Leitura e detecção de binários
-│       ├── metadata.py      # Leitura de metadados do pacote
+│       │   ├── condenser.py   # Lógica principal de condensação
+│       │   ├── filters.py     # Filtros de arquivos e diretórios
+│       │   └── readers.py     # Leitura e detecção de binários
+│       ├── metadata.py        # Leitura de metadados do pacote
 │       └── cli.py
 ├── tests/
 ├── pyproject.toml
