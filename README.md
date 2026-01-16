@@ -182,6 +182,7 @@ Variáveis disponíveis:
 - Arquivos ilegíveis ignorados com segurança
 - Fallback automático de encoding
 - Arquivos sem extensão usam o nome do arquivo como `extension_name` (ex.: `Makefile`)
+- Metadados do pacote priorizam `description` do `pyproject.toml` (PEP 621)
 
 ---
 
