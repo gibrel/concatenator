@@ -8,7 +8,8 @@ version = "0.0.2"
 description = "CLI tool to recursively concatenate text files into a single output."
 readme = "README.md"
 requires-python = ">=3.12.12"
-license = { file = "LICENSE" }
+license = "Unlicense"
+license-files = ["LICENCSE"]
 keywords = ["boilerplate", "python", "concatenator"]
 authors = [{ name = "Gibrel" }]
 dependencies = []
