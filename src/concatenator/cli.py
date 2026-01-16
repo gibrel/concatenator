@@ -45,6 +45,13 @@ def build_parser() -> argparse.ArgumentParser:
         default=[],
         help="List of file extensions to include.",
     )
+    parser.add_argument(
+        "--detect-encoding",
+        action="store_true",
+        help=(
+            "Enable automatic encoding detection when UTF-8 decoding fails. May impact performance."
+        ),
+    )
     parser.add_argument("--encoding", type=str, default="utf-8", help="File encoding to use.")
     parser.add_argument(
         "--errors",
@@ -78,6 +85,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="Add markdownlint disable/enable markers around Makefile content.",
     )
     parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Run without writing the output file; logs summary only.",
+    )
+    parser.add_argument(
+        "--list-files",
+        action="store_true",
+        help="List files that would be included without writing output.",
+    )
+    parser.add_argument(
         "-q", "--quiet", action="store_true", help="Suppress non-essential log output."
     )
     parser.add_argument(
@@ -104,6 +121,7 @@ def main() -> int:
         ignore_extensions=args.ignore_extensions,
         include_extensions=args.include_extensions,
         encoding=args.encoding,
+        detect_encoding=args.detect_encoding,
         errors=args.errors,
         skip_binary=args.skip_binary,
         max_file_size=args.max_file_size,
@@ -111,11 +129,18 @@ def main() -> int:
         header_text=args.header_text,
         footer_text=args.footer_text,
         makefile_markdownlint=args.markdownlint_disable_md010,
+        dry_run=args.dry_run,
+        list_files=args.list_files,
     )
     setup_logger(verbosity=args.verbose, settings=settings, quiet=args.quiet)
 
     count = condense_directory(settings)
-    print(f"Condensed {count} files into {settings.output_file}")
+    if settings.dry_run or settings.list_files:
+        logging.getLogger(settings.app_name).info("Dry-run complete. %s files matched.", count)
+    else:
+        logging.getLogger(settings.app_name).info(
+            "Condensed %s files into %s", count, settings.output_file
+        )
     return 0
 
 
