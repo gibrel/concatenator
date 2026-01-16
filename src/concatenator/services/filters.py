@@ -80,7 +80,7 @@ def should_include_file(
     Returns:
         True if the file should be included, False otherwise.
     """
-    ext = file_path.suffix.lower()
+    ext = file_path.suffix.lower() or ".txt"
     if include_extensions and ext not in include_extensions:
         return False
     if ext in ignore_extensions:

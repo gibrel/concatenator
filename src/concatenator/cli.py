@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import logging
 from pathlib import Path
 
 from concatenator.metadata import get_package_metadata
@@ -11,25 +12,45 @@ from .core.config import Settings
 from .core.logger import configure_logger
 from .services.condenser import condense_directory
 
-app_name, app_version, app_summary, app_description = get_package_metadata()
-if not app_summary:
-    app_summary = app_description
+app_name, app_version, app_description = get_package_metadata()
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog=f"{app_name} CLI v{app_version}", description=app_summary)
+    parser = argparse.ArgumentParser(
+        prog=f"{app_name} CLI v{app_version}", description=app_description
+    )
+    parser.add_argument("--version", action="version", version=f"{app_name} {app_version}")
     parser.add_argument("root_directory", type=Path, help="Root directory to condense files from.")
     parser.add_argument(
         "-o", "--output-file", type=Path, default=Path.cwd() / "output.md", help="Output file path."
     )
     parser.add_argument(
-        "--ignore-directories", nargs="*", default=[], help="List of directory paths to ignore."
+        "--ignore-directories",
+        "--ignore-dirs",
+        nargs="*",
+        default=[],
+        help="List of directory paths to ignore.",
     )
     parser.add_argument(
-        "--ignore-extensions", nargs="*", default=[], help="List of file extensions to ignore."
+        "--ignore-extensions",
+        "--ignore-exts",
+        nargs="*",
+        default=[],
+        help="List of file extensions to ignore.",
     )
     parser.add_argument(
-        "--include-extensions", nargs="*", default=[], help="List of file extensions to include."
+        "--include-extensions",
+        "--include-exts",
+        nargs="*",
+        default=[],
+        help="List of file extensions to include.",
+    )
+    parser.add_argument(
+        "--detect-encoding",
+        action="store_true",
+        help=(
+            "Enable automatic encoding detection when UTF-8 decoding fails. May impact performance."
+        ),
     )
     parser.add_argument("--encoding", type=str, default="utf-8", help="File encoding to use.")
     parser.add_argument(
@@ -58,13 +79,32 @@ def build_parser() -> argparse.ArgumentParser:
         help="Footer text format for each file.",
     )
     parser.add_argument(
+        "--markdownlint-disable-md010",
+        "--mdlint-md010",
+        action="store_true",
+        help="Add markdownlint disable/enable markers around Makefile content.",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Run without writing the output file; logs summary only.",
+    )
+    parser.add_argument(
+        "--list-files",
+        action="store_true",
+        help="List files that would be included without writing output.",
+    )
+    parser.add_argument(
+        "-q", "--quiet", action="store_true", help="Suppress non-essential log output."
+    )
+    parser.add_argument(
         "-v", "--verbose", action="count", default=0, help="Increase verbosity level."
     )
     return parser
 
 
-def setup_logger(verbosity: int, settings: Settings) -> None:
-    level = max(10, 30 - (verbosity * 10))  # 0: WARNING, 1: INFO, 2+: DEBUG
+def setup_logger(verbosity: int, settings: Settings, quiet: bool = False) -> None:
+    level = logging.ERROR if quiet else max(10, 30 - (verbosity * 10))
     logger = configure_logger(settings.app_name, level=level)
     logger.debug(f"Logger configured at level: {level}")
 
@@ -81,17 +121,26 @@ def main() -> int:
         ignore_extensions=args.ignore_extensions,
         include_extensions=args.include_extensions,
         encoding=args.encoding,
+        detect_encoding=args.detect_encoding,
         errors=args.errors,
         skip_binary=args.skip_binary,
         max_file_size=args.max_file_size,
         # relative_paths=args.relative_paths,
         header_text=args.header_text,
         footer_text=args.footer_text,
+        makefile_markdownlint=args.markdownlint_disable_md010,
+        dry_run=args.dry_run,
+        list_files=args.list_files,
     )
-    setup_logger(verbosity=2, settings=settings)
+    setup_logger(verbosity=args.verbose, settings=settings, quiet=args.quiet)
 
     count = condense_directory(settings)
-    print(f"Condensed {count} files into {settings.output_file}")
+    if settings.dry_run or settings.list_files:
+        logging.getLogger(settings.app_name).info("Dry-run complete. %s files matched.", count)
+    else:
+        logging.getLogger(settings.app_name).info(
+            "Condensed %s files into %s", count, settings.output_file
+        )
     return 0
 
 

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from charset_normalizer import from_bytes
+
 
 def is_binary_file(file_path: Path, sample_size: int = 4096) -> bool:
     """Check if a file is binary. Simple heuristic based on null bytes.
@@ -25,8 +27,48 @@ def is_binary_file(file_path: Path, sample_size: int = 4096) -> bool:
         return False
 
 
+def detect_file_encoding(
+    data: bytes,
+    fallback: str = "utf-8",
+    confidence_threshold: float = 0.8,
+    min_bytes: int = 24,
+) -> str:
+    """Detect the encoding of a byte sequence.
+
+    Args:
+        data: Raw bytes from a file.
+        fallback: Encoding to use when detection fails.
+        confidence_threshold: Minimum coherence required to accept the detected encoding.
+        min_bytes: Minimum byte length before attempting detection.
+    Returns:
+        The detected encoding or the fallback encoding.
+    """
+    if not data or len(data) < min_bytes:
+        return fallback
+    result = from_bytes(data).best()
+    if result and result.encoding:
+        encoding = result.encoding
+        coherence = result.coherence or 0.0
+        if b"\x00" not in data and encoding.lower().startswith(("utf_16", "utf_32")):
+            return fallback
+        if coherence < confidence_threshold:
+            if len(data) >= min_bytes * 2 and encoding.lower() in {
+                "latin_1",
+                "iso8859_1",
+                "iso8859-1",
+                "cp1252",
+            }:
+                return encoding
+            return fallback
+        return encoding
+    return fallback
+
+
 def read_file_content(
-    file_path: Path, encoding: str = "utf-8", errors: str = "replace"
+    file_path: Path,
+    encoding: str = "utf-8",
+    errors: str = "replace",
+    detect_encoding: bool = False,
 ) -> str | None:
     """Read the content of a text file.
 
@@ -38,13 +80,21 @@ def read_file_content(
         The content of the file as a string.
     """
     try:
-        with file_path.open("r", encoding=encoding, errors=errors) as f:
-            return f.read()
-    except UnicodeDecodeError:
         try:
-            with file_path.open("r", encoding="latin-1", errors="ignore") as f:
-                return f.read()
-        except Exception:
+            data = file_path.read_bytes()
+            try:
+                return data.decode("utf-8", errors="strict")
+            except UnicodeDecodeError:
+                if detect_encoding:
+                    detected = detect_file_encoding(data, fallback=encoding)
+                    try:
+                        return data.decode(detected, errors=errors)
+                    except UnicodeDecodeError:
+                        if detected != encoding:
+                            return data.decode(encoding, errors=errors)
+                        raise
+                return data.decode(encoding, errors=errors)
+        except UnicodeDecodeError:
             return None
     except Exception:
         return None

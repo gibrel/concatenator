@@ -3,7 +3,7 @@ VENV := .venv
 BIN := $(VENV)/bin
 PIP := $(BIN)/pip
 
-.PHONY: venv init deps dev install format lint type test build install run clean
+.PHONY: venv init deps-run deps-dev dev install format lint type test coverage build run pre-commit clean
 
 venv:
 	$(PYTHON) -m venv $(VENV)
@@ -11,24 +11,28 @@ venv:
 init: venv
 	$(PIP) install --upgrade pip setuptools wheel
 
-deps: init
+deps-run: init
+	$(PIP) install -e .
+
+deps-dev: init
 	$(PIP) install -e ".[dev]"
 
-dev: deps
+dev: deps-dev
 
-install: deps
-
-format:
+format: dev
 	$(BIN)/ruff format
 
-lint:
+lint: dev
 	$(BIN)/ruff check --fix
 
-type:
+type: dev
 	$(BIN)/mypy src
 
-test:
-	$(BIN)/pytest
+test: dev
+	$(BIN)/pytest -q
+
+coverage: dev
+	$(BIN)/pytest --cov=concatenator --cov-report=term-missing --cov-fail-under=80
 
 build:
 	$(BIN)/python -m build
@@ -36,8 +40,10 @@ build:
 install: build
 	$(PIP) install dist/*.whl
 
-run:
+run: deps-run
 	$(BIN)/concatenator $(ARGS)
+
+pre-commit: format lint type test
 
 clean:
 	rm -rf $(VENV) .pytest_cache .ruff_cache .mypy_cache dist build *.egg-info

@@ -4,19 +4,36 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "concatenator"
-version = "0.0.2"
+version = "0.0.3"
 description = "CLI tool to recursively concatenate text files into a single output."
 readme = "README.md"
-requires-python = ">=3.12.12"
-license = { file = "LICENSE" }
-keywords = ["boilerplate", "python", "concatenator"]
+requires-python = ">=3.12"
+license = "Unlicense"
+license-files = ["LICENSE"]
+keywords = ["concatenator", "cli", "text", "markdown", "repository-audit", "documentation"]
 authors = [{ name = "Gibrel" }]
-dependencies = []
+dependencies = ["charset-normalizer>=3.4.4"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Utilities",
+  "Typing :: Typed",
+]
+
+[project.urls]
+Repository = "https://github.com/gibrel/concatenator"
+Issues = "https://github.com/gibrel/concatenator/issues"
+Changelog = "https://github.com/gibrel/concatenator/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [
   "mypy>=1.19.1",
   "pytest>=9.0.2",
+  "pytest-cov>=7.0.0",
   "ruff>=0.14.11",
   "build>=1.4.0",
 ]
@@ -32,7 +49,7 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra"
+addopts = "-ra --cov=concatenator --cov-report=term-missing --cov-fail-under=80"
 testpaths = ["tests"]
 pythonpath = ["src"]
 

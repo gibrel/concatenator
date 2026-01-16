@@ -5,7 +5,7 @@ import tomllib
 from collections.abc import Mapping
 from importlib import metadata
 
-_CACHE: tuple[str, str, str, str] | None = None
+_CACHE: tuple[str, str, str] | None = None
 
 
 def _read_pyproject_toml(root: str = ".") -> Mapping[str, object] | None:
@@ -23,12 +23,12 @@ def _read_pyproject_toml(root: str = ".") -> Mapping[str, object] | None:
         return None
 
 
-def get_package_metadata(distribution_name: str = "concatenator") -> tuple[str, str, str, str]:
-    """Get package metadata: name, version, summary and description.
+def get_package_metadata(distribution_name: str = "concatenator") -> tuple[str, str, str]:
+    """Get package metadata: name, version and description.
     Args:
         distribution_name: The name of the distribution/package.
     Returns:
-        A tuple of (name, version, summary, description).
+        A tuple of (name, version, description).
     """
     global _CACHE
     if _CACHE is not None:
@@ -39,10 +39,9 @@ def get_package_metadata(distribution_name: str = "concatenator") -> tuple[str, 
         dist = metadata.distribution(distribution_name)
         name = dist.metadata["Name"] or distribution_name
         version = dist.version or "0.0.0"
-        summary = dist.metadata["Summary"] or ""
         description = dist.metadata["Description"] or ""
 
-        _CACHE = (name, version, summary, description)
+        _CACHE = (name, version, description)
         return _CACHE
 
     except metadata.PackageNotFoundError:
@@ -50,22 +49,16 @@ def get_package_metadata(distribution_name: str = "concatenator") -> tuple[str, 
         project = data.get("project", {}) if data else {}
         name = distribution_name
         version = "0.0.0"
-        summary = ""
         description = ""
 
         if isinstance(project, dict):
             name = str(project.get("name", name))
             version = str(project.get("version", version))
-            summary = (
-                str(project.get("summary", summary))
-                if project.get("summary") is not None
-                else summary
-            )
             description = (
                 str(project.get("description", description))
                 if project.get("description") is not None
                 else description
             )
 
-        _CACHE = (name, version, summary, description)
+        _CACHE = (name, version, description)
         return _CACHE
