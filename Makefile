@@ -3,7 +3,7 @@ VENV := .venv
 BIN := $(VENV)/bin
 PIP := $(BIN)/pip
 
-.PHONY: venv init deps dev install format lint type test coverage build install run pre-commit clean
+.PHONY: venv init deps-run deps-dev dev install format lint type test coverage build run pre-commit clean
 
 venv:
 	$(PYTHON) -m venv $(VENV)
@@ -11,12 +11,13 @@ venv:
 init: venv
 	$(PIP) install --upgrade pip setuptools wheel
 
-deps: init
+deps-run: init
+	$(PIP) install -e .
+
+deps-dev: init
 	$(PIP) install -e ".[dev]"
 
-dev: deps
-
-install: deps
+dev: deps-dev
 
 format:
 	$(BIN)/ruff format
