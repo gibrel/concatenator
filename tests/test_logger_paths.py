@@ -16,5 +16,5 @@ def test_configure_logger_sets_handler_and_level():
 
 
 def test_paths_point_to_repo():
-    assert paths.PROJECT_ROOT.name == "concatenator" or paths.PROJECT_ROOT.name == "Concatenator"
+    assert paths.PROJECT_ROOT.name.lower() == "concatenator"
     assert paths.SRC_DIR.name == "src"
