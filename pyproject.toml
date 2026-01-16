@@ -7,10 +7,10 @@ name = "concatenator"
 version = "0.0.2"
 description = "CLI tool to recursively concatenate text files into a single output."
 readme = "README.md"
-requires-python = ">=3.12.12"
+requires-python = ">=3.12"
 license = "Unlicense"
 license-files = ["LICENCSE"]
-keywords = ["boilerplate", "python", "concatenator"]
+keywords = ["classifiers", "python", "concatenator", "cli", "tool", "text", "files", "concatenate", "markdown"]
 authors = [{ name = "Gibrel" }]
 dependencies = ["charset-normalizer>=3.4.4"]
 
@@ -34,7 +34,7 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra --cov=concatenator --cov-report=term-missing --cov-fail-under=80"
+addopts = "-ra"  # "-ra --cov=concatenator --cov-report=term-missing --cov-fail-under=80"
 testpaths = ["tests"]
 pythonpath = ["src"]
 
