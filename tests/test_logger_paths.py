@@ -11,6 +11,7 @@ def test_configure_logger_sets_handler_and_level():
 
     same_logger = configure_logger("concatenator-test", level=logging.INFO)
     assert same_logger is logger
+    assert logger.level == logging.INFO
     logger.handlers.clear()
 
 
