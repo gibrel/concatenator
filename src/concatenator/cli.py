@@ -88,7 +88,7 @@ def main() -> int:
         header_text=args.header_text,
         footer_text=args.footer_text,
     )
-    setup_logger(verbosity=2, settings=settings)
+    setup_logger(verbosity=args.verbose, settings=settings)
 
     count = condense_directory(settings)
     print(f"Condensed {count} files into {settings.output_file}")
