@@ -12,8 +12,24 @@ O projeto é voltado para inspeção de repositórios, auditoria de código, doc
 
 ---
 
+## ⚡ Quickstart
+
+```bash
+concatenator . \
+  --include-extensions .py .md .toml \
+  --ignore-extensions .png .jpg .pdf \
+  --ignore-directories .git .venv node_modules \
+  --max-file-size 200000 \
+  --skip-binary
+```
+
+Esse comando cobre o caso mais comum: inclui apenas arquivos de texto úteis, ignora diretórios de tooling e arquivos grandes/binários, reduzindo ruído e tempo de execução.
+
+---
+
 ## 📚 Índice
 
+- [Quickstart](#-quickstart)
 - [Principais características](#-principais-características)
 - [Para quem é](#-para-quem-é)
 - [Princípios do projeto](#-princípios-do-projeto)
@@ -21,6 +37,7 @@ O projeto é voltado para inspeção de repositórios, auditoria de código, doc
 - [Instalação](#-instalação)
 - [Uso básico](#️-uso-básico)
 - [Opções do CLI](#️-opções-do-cli)
+- [Semântica dos filtros](#-semântica-dos-filtros)
 - [Formatação do conteúdo](#-formatação-do-conteúdo)
 - [Comportamento importante](#-comportamento-importante)
 - [Estrutura do projeto](#estrutura-do-projeto)
@@ -174,6 +191,40 @@ concatenator ./pasta-alvo --dry-run
 
 ```bash
 concatenator ./pasta-alvo --list-files
+```
+
+---
+
+## 🧭 Semântica dos filtros
+
+### Precedência (ordem de aplicação)
+
+1. **Ignorar diretórios**: diretórios excluídos são removidos da varredura antes de qualquer arquivo ser avaliado.
+2. **Include extensions**: quando informado, funciona como *allowlist* (apenas essas extensões passam).
+3. **Ignore extensions**: sempre bloqueia, mesmo que a extensão esteja na lista de inclusão.
+
+### `ignore-directories`: nome vs caminho relativo
+
+O filtro aceita **nomes de diretório** ou **caminhos relativos à pasta raiz informada**:
+
+- **Nome**: ignora qualquer pasta com esse nome em qualquer nível.
+  - Ex.: `--ignore-directories .git build` ignora todas as pastas `.git` e `build`.
+- **Caminho relativo**: ignora apenas o caminho exato a partir da raiz.
+  - Ex.: `--ignore-directories docs/generated` ignora somente `./docs/generated`.
+
+> Dica: se você quer ignorar apenas uma subpasta específica, use o caminho relativo. Para ignorar qualquer pasta com o mesmo nome, use apenas o nome.
+
+### Exemplos rápidos
+
+```bash
+# 1) Apenas .py e .md, mas sempre exclui .md se estiver em ignore-extensions
+concatenator . --include-extensions .py .md --ignore-extensions .md
+
+# 2) Ignora qualquer "dist", inclusive "docs/dist"
+concatenator . --ignore-directories dist
+
+# 3) Ignora apenas a pasta raiz específica "docs/dist"
+concatenator . --ignore-directories docs/dist
 ```
 
 ---
