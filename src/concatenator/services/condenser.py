@@ -74,6 +74,7 @@ def collect_files_to_condense(configuration: Settings) -> list[Path]:
                 file_path,
                 encoding=configuration.encoding,
                 errors=configuration.errors,
+                detect_encoding=configuration.detect_encoding,
             )
 
             if content is None:
@@ -96,7 +97,8 @@ def condense_directory(settings: Settings) -> int:
 
     if not configuration.root_directory.is_dir():
         raise ConcatenatorInvalidRootError(
-            f"Invalid root directory: {configuration.root_directory}")
+            f"Invalid root directory: {configuration.root_directory}"
+        )
 
     configuration.output_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -159,6 +161,7 @@ def condense_directory(settings: Settings) -> int:
                         file_path,
                         encoding=configuration.encoding,
                         errors=configuration.errors,
+                        detect_encoding=configuration.detect_encoding,
                     )
 
                     # should skip file if content could not be read
@@ -214,4 +217,5 @@ def condense_directory(settings: Settings) -> int:
 
     except OSError as e:
         raise ConcatenatorOutputWriteError(
-            f"Error writing to output file: {configuration.output_file}") from e
+            f"Error writing to output file: {configuration.output_file}"
+        ) from e

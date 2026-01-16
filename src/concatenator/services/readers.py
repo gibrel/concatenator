@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from charset_normalizer import from_bytes
+
 
 def is_binary_file(file_path: Path, sample_size: int = 4096) -> bool:
     """Check if a file is binary. Simple heuristic based on null bytes.
@@ -25,8 +27,32 @@ def is_binary_file(file_path: Path, sample_size: int = 4096) -> bool:
         return False
 
 
+def detect_file_encoding(data: bytes, fallback: str = "utf-8") -> str:
+    """Detect the encoding of a byte sequence.
+
+    Args:
+        data: Raw bytes from a file.
+        fallback: Encoding to use when detection fails.
+    Returns:
+        The detected encoding or the fallback encoding.
+    """
+    result = from_bytes(data).best()
+    if result and result.encoding:
+        encoding = result.encoding
+        coherence = result.coherence
+        if b"\x00" not in data and (
+            encoding.lower().startswith(("utf_16", "utf_32")) or coherence < 0.7
+        ):
+            return "latin-1"
+        return encoding
+    return fallback
+
+
 def read_file_content(
-    file_path: Path, encoding: str = "utf-8", errors: str = "replace"
+    file_path: Path,
+    encoding: str = "utf-8",
+    errors: str = "replace",
+    detect_encoding: bool = False,
 ) -> str | None:
     """Read the content of a text file.
 
@@ -38,6 +64,10 @@ def read_file_content(
         The content of the file as a string.
     """
     try:
+        if detect_encoding:
+            data = file_path.read_bytes()
+            detected = detect_file_encoding(data, fallback=encoding)
+            return data.decode(detected, errors=errors)
         with file_path.open("r", encoding=encoding, errors=errors) as f:
             return f.read()
     except UnicodeDecodeError:
