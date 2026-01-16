@@ -35,6 +35,55 @@ def build_display_path(path: Path, root: Path, use_relative_paths: bool) -> str:
     return f"/{display_path.as_posix()}"
 
 
+def collect_files_to_condense(configuration: Settings) -> list[Path]:
+    files_to_condense: list[Path] = []
+
+    for dirpath, dirnames, filenames in os.walk(configuration.root_directory):
+        current_dir = Path(dirpath)
+
+        to_remove = should_ignore_dir(
+            current_dir,
+            dirnames,
+            normalize_ignore_directories(configuration.ignore_directories),
+            configuration.root_directory,
+        )
+        for dirname in to_remove:
+            dirnames.remove(dirname)
+
+        for filename in filenames:
+            file_path = current_dir / filename
+
+            if not should_include_file(
+                file_path,
+                normalize_extensions(configuration.include_extensions),
+                normalize_extensions(configuration.ignore_extensions),
+            ):
+                continue
+
+            if configuration.max_file_size is not None:
+                try:
+                    if file_path.stat().st_size > configuration.max_file_size:
+                        continue
+                except OSError:
+                    continue
+
+            if configuration.skip_binary and is_binary_file(file_path):
+                continue
+
+            content = read_file_content(
+                file_path,
+                encoding=configuration.encoding,
+                errors=configuration.errors,
+            )
+
+            if content is None:
+                continue
+
+            files_to_condense.append(file_path)
+
+    return files_to_condense
+
+
 def condense_directory(settings: Settings) -> int:
     """Condense files in the root directory based on settings.
 
@@ -53,6 +102,9 @@ def condense_directory(settings: Settings) -> int:
     files_condensed = 0
 
     try:
+        files_to_condense = collect_files_to_condense(configuration)
+        last_file = files_to_condense[-1] if files_to_condense else None
+
         with configuration.output_file.open(
             "w", encoding=configuration.encoding, errors=configuration.errors
         ) as output_file:
@@ -138,7 +190,11 @@ def condense_directory(settings: Settings) -> int:
                     output_file.write(content)
                     if not content.endswith("\n"):
                         output_file.write("\n")
-                    output_file.write(footer + "\n")
+                    if file_path == last_file:
+                        footer_text = footer.rstrip("\n")
+                        output_file.write(f"{footer_text}\n\n")
+                    else:
+                        output_file.write(footer + "\n")
 
                     files_condensed += 1
 
